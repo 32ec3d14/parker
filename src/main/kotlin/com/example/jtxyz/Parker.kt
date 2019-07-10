@@ -1,11 +1,10 @@
 package com.example.jtxyz
 
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.net.URI
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.min
@@ -16,67 +15,49 @@ class Parker(
     private val fetcher: PageFetcher = KtorPageFetcher(),
     private val extractor: LinkExtractor = JSoupLinkExtractor()
 ) {
-    private val dop = 20
-    private val seen = ConcurrentHashMap.newKeySet<URI>()
-    private val frontier = LinkedList<URI>() // use a queue to allow breadth-first search
-
-    // just for logging, ConcurrentLinkedQueue#size has linear performance
-    private val frontierSize = AtomicInteger()
-
-
     fun crawl(maxPages: Int) = runBlocking {
-        enqueue(startingUri)
+        // just for logging / monitoring
+        val frontierSize = AtomicInteger(1)
 
-        val count = AtomicInteger()
-        val active = AtomicInteger()
+        // we could use a bloom filter if we were expecting a very large set
+        val knownLinks = ConcurrentHashMap.newKeySet<URI>()
+        knownLinks.add(startingUri)
 
-        (0 until dop).map {
-            launch {
-                while (true) {
-                    val ix = count.updateAndGet { x -> min(x + 1, maxPages + 1) }
-                    if (ix == maxPages + 1) {
-                        count.decrementAndGet()
-                        break
-                    }
+        val startedPageCount = AtomicInteger()
+        val finishedPageCount = AtomicInteger()
 
-
-                    active.incrementAndGet()
-                    val uri = frontier.poll()
-                    if (uri == null) {
-                        count.decrementAndGet()
-                        if (active.decrementAndGet() == 0) {
-                            break
-                        }
-                        delay(50)
-                        continue
-                    }
-
-                    frontierSize.decrementAndGet()
-
-                    try {
-                        val page = fetcher.fetch(uri)
-                        val links = extractor.extract(page)
-
-                        reporter.reportLinks(uri, links)
-                        links.forEach(::enqueue)
-                    } catch (e: Exception) {
-                        reporter.reportError(uri, e)
-                    } finally {
-                        active.decrementAndGet()
-                    }
-                    reporter.reportProgress(ix, frontierSize.get())
-                }
+        fun crawl(uri: URI): Job = launch {
+            if (startedPageCount.getAndUpdate { x -> min(x + 1, maxPages) } == maxPages) {
+                return@launch
             }
-        }.joinAll()
 
-        reporter.reportEnd(frontierSize.get() == 0, count.get())
-    }
+            val links = try {
+                fetcher.fetch(uri)
+                    .let { extractor.extract(it) }
+                    .also { reporter.reportLinks(uri, it) }
+            } catch (e: Exception) {
+                reporter.reportError(uri, e)
+                emptyList<URI>()
+            } finally {
+                frontierSize.decrementAndGet()
+            }
 
-    private fun enqueue(uri: URI) {
-        val trimmed = URI(uri.scheme, null, uri.host, uri.port, uri.path, uri.query, null)
-        if (seen.add(trimmed)) {
-            frontier.add(trimmed)
-            frontierSize.incrementAndGet()
+            links
+                // strip off the fragment, these all correspond to a single document
+                .map { URI(it.scheme, null, it.host, it.port, it.path, it.query, null) }
+                // add it to the list of known links or skip it if we already know about it
+                .filter(knownLinks::add)
+                // a few of these showed up in the logs. what else might we want to exclude?
+                .filterNot { it.toString().endsWith(".pdf") }
+                // make a note of the new relevant links for logging / monitoring
+                .also { reporter.reportProgress(finishedPageCount.incrementAndGet(), frontierSize.addAndGet(it.size)) }
+                // kick off the children coroutines to process the next set of documents
+                .map { crawl(it) }
+                .joinAll()
         }
+
+        crawl(startingUri).join()
+
+        reporter.reportEnd(frontierSize.get() == 0, startedPageCount.get())
     }
 }

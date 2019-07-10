@@ -24,7 +24,7 @@ mvn clean verify
 
 - [x] Use HTML parsing library rather than regex
 - [x] Use more robust HTTP client (with better error handling, charset support, redirects, URL rebuilding, etc.)
-- [ ] Make concurrent requests, possibly using Kotlin coroutines
+- [x] Make concurrent requests, possibly using Kotlin coroutines
 - [ ] Better arg parsing and validation
 - [ ] Production-ready features: logging and monitoring
 - [ ] Politeness: respect for robots.txt
@@ -36,9 +36,9 @@ Some rough performance figures using `test-server.js`
 ```
 # 200 pages, average 200ms reponse time
 time ./bin/parker http://localhost:9999/random/
-real	0m3.731s
+real	0m2.204s
 
 # Stops after 500 pages, average response time 100ms
 time ./bin/parker http://localhost:9999/
-real	0m4.005s
+real	0m1.962s
 ```
