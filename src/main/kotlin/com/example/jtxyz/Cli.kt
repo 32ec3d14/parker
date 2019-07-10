@@ -1,5 +1,7 @@
 package com.example.jtxyz
 
+import java.net.URL
+
 fun main(args: Array<String>) {
-    Parker(args.first()).crawl()
+    Parker(URL(args.first()).toURI()).crawl(500)
 }
