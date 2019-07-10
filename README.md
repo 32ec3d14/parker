@@ -23,7 +23,7 @@ mvn clean verify
 ## Next steps
 
 - [x] Use HTML parsing library rather than regex
-- [ ] Use more robust HTTP client (with better error handling, charset support, redirects, URL rebuilding, etc.)
+- [x] Use more robust HTTP client (with better error handling, charset support, redirects, URL rebuilding, etc.)
 - [ ] Make concurrent requests, possibly using Kotlin coroutines
 - [ ] Better arg parsing and validation
 - [ ] Production-ready features: logging and monitoring

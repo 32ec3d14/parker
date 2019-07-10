@@ -1,7 +1,13 @@
 package com.example.jtxyz
 
+import io.ktor.client.HttpClient
+import io.ktor.client.features.BrowserUserAgent
+import io.ktor.client.request.get
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readText
+import io.ktor.http.toURI
+import kotlinx.coroutines.runBlocking
 import java.io.IOException
-import java.net.HttpURLConnection
 import java.net.URI
 
 data class Page(val uri: URI, val content: String)
@@ -10,28 +16,24 @@ interface PageFetcher {
     fun fetch(uri: URI): Page
 }
 
-const val userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) " +
-        "AppleWebKit/537.36 (KHTML, like Gecko) " +
-        "Chrome/75.0.3770.100 Safari/537.36"
-
-class URLConnectionPageFetcher(
+class KtorPageFetcher(
     private val retryConfig: RetryConfig = RetryConfig()
 ) : PageFetcher {
-    override fun fetch(uri: URI) = retry<Page>(retryConfig) {
-        val connection = uri.toURL().openConnection() as HttpURLConnection
-        connection.setRequestProperty("User-Agent", userAgent)
+    private val client = HttpClient {
+        BrowserUserAgent()
+    }
 
-        when (connection.responseCode) {
-            in 200..299 -> Complete(
-                Page(
-                    connection.url.toURI(), // set this after checking the response code to update based on redirects
-                    connection.inputStream
-                        .readBytes()
-                        .toString(Charsets.UTF_8)
+    override fun fetch(uri: URI): Page = retry<Page>(retryConfig) {
+        runBlocking {
+            val response = client.get<HttpResponse>(uri.toString())
+
+            when (response.status.value) {
+                in 200..299 -> Complete(
+                    Page(response.call.request.url.toURI(), response.readText())
                 )
-            )
-            429 -> Retry(IOException(connection.responseMessage))
-            else -> error(connection.responseMessage)
+                429 -> Retry<Page>(IOException(response.status.description))
+                else -> error(response.status.description)
+            }
         }
     }
 }

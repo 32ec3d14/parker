@@ -79,7 +79,7 @@ class ParkerIT {
         Parker(
             URI("http://localhost:$port/too-many"),
             reporter,
-            URLConnectionPageFetcher(RetryConfig(5, 250, PrintStream(out)))
+            KtorPageFetcher(RetryConfig(5, 250, PrintStream(out)))
         ).crawl(5)
 
         assertEquals(
@@ -108,7 +108,7 @@ class ParkerIT {
         Parker(
             URI("http://localhost:$port/after-three"),
             reporter,
-            URLConnectionPageFetcher(RetryConfig(5, 250, PrintStream(out)))
+            KtorPageFetcher(RetryConfig(5, 250, PrintStream(out)))
         ).crawl(1)
 
         assertEquals(

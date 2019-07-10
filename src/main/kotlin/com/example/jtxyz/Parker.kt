@@ -6,7 +6,7 @@ import java.util.*
 class Parker(
     private val startingUri: URI,
     private val reporter: SiteMapReporter = ConsoleSiteMapReporter(),
-    private val fetcher: PageFetcher = URLConnectionPageFetcher(),
+    private val fetcher: PageFetcher = KtorPageFetcher(),
     private val extractor: LinkExtractor = JSoupLinkExtractor()
 ) {
     private val seen = mutableSetOf<URI>()
