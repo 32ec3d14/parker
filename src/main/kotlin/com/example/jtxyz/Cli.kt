@@ -39,5 +39,7 @@ fun main(args: Array<String>) = mainBody {
                 JSoupLinkExtractor()
             )
                 .crawl(maxPages)
+
+            Metrics.report()
         }
 }

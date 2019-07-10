@@ -1,5 +1,6 @@
 package com.example.jtxyz
 
+import com.example.jtxyz.Metrics.measureRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.features.BrowserUserAgent
 import io.ktor.client.request.get
@@ -23,7 +24,7 @@ class KtorPageFetcher(
     }
 
     override suspend fun fetch(uri: URI): Page = retry<Page>(retryConfig) {
-        val response = client.get<HttpResponse>(uri.toString())
+        val response = measureRequest { client.get<HttpResponse>(uri.toString()) }
 
         when (response.status.value) {
             in 200..299 -> Complete(

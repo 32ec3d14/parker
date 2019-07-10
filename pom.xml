@@ -19,6 +19,7 @@
         <junit.version>4.12</junit.version>
         <mockito.version>2.28.2</mockito.version>
         <ktor.version>1.2.2</ktor.version>
+        <metrics.version>4.0.0</metrics.version>
         <main.class>com.example.jtxyz.CliKt</main.class>
     </properties>
 
@@ -55,6 +56,16 @@
             <artifactId>kotlin-argparser</artifactId>
             <version>2.0.7</version>
         </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>${metrics.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -84,12 +95,6 @@
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-netty</artifactId>
             <version>${ktor.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
             <scope>test</scope>
         </dependency>
 

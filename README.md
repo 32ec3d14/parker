@@ -41,7 +41,7 @@ positional arguments:
 - [x] Use more robust HTTP client (with better error handling, charset support, redirects, URL rebuilding, etc.)
 - [x] Make concurrent requests, possibly using Kotlin coroutines
 - [x] Better arg parsing and validation
-- [ ] Production-ready features: logging and monitoring
+- [x] Production-ready features: logging and monitoring
 - [ ] Politeness: respect for robots.txt
 
 ## Performance

@@ -1,5 +1,6 @@
 package com.example.jtxyz
 
+import com.example.jtxyz.Metrics.parseTiming
 import org.jsoup.Jsoup
 import java.net.URI
 
@@ -9,7 +10,7 @@ interface LinkExtractor {
 }
 
 class JSoupLinkExtractor : LinkExtractor {
-    override fun extract(page: Page) =
+    override fun extract(page: Page) = parseTiming.time<List<URI>> {
         Jsoup
             .parse(page.content, page.uri.toString())
             .select("a[href]")
@@ -18,4 +19,5 @@ class JSoupLinkExtractor : LinkExtractor {
             .map { URI(it) }
             // we only want to crawl internal links
             .filter { it.host == page.uri.host }
+    }!!
 }
