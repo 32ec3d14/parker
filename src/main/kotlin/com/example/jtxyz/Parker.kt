@@ -1,9 +1,7 @@
 package com.example.jtxyz
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.ticker
 import java.net.URI
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -15,6 +13,7 @@ class Parker(
     private val fetcher: PageFetcher = KtorPageFetcher(),
     private val extractor: LinkExtractor = JSoupLinkExtractor()
 ) {
+    @ObsoleteCoroutinesApi
     fun crawl(maxPages: Int) = runBlocking {
         // just for logging / monitoring
         val frontierSize = AtomicInteger(1)
@@ -26,10 +25,15 @@ class Parker(
         val startedPageCount = AtomicInteger()
         val finishedPageCount = AtomicInteger()
 
+        val rateLimit = ticker(delayMillis = 2, initialDelayMillis = 0)
+
         fun crawl(uri: URI): Job = launch {
             if (startedPageCount.getAndUpdate { x -> min(x + 1, maxPages) } == maxPages) {
                 return@launch
             }
+
+            // wait until a token is available
+            rateLimit.receive()
 
             val links = try {
                 fetcher.fetch(uri)

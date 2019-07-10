@@ -10,6 +10,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -46,6 +47,7 @@ class TestReporter : SiteMapReporter {
 
 }
 
+@ObsoleteCoroutinesApi
 class ParkerIT {
     private lateinit var reporter: TestReporter
 

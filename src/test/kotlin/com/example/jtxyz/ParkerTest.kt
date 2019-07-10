@@ -1,11 +1,13 @@
 package com.example.jtxyz
 
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
 import java.net.URI
 
+@ObsoleteCoroutinesApi
 class ParkerTest {
     private lateinit var pageFetcher: PageFetcher
     private lateinit var linkExtractor: LinkExtractor
