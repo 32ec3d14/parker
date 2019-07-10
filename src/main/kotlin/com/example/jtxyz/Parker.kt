@@ -7,7 +7,7 @@ class Parker(
     private val startingUri: URI,
     private val reporter: SiteMapReporter = ConsoleSiteMapReporter(),
     private val fetcher: PageFetcher = URLConnectionPageFetcher(),
-    private val extractor: LinkExtractor = RegexLinkExtractor()
+    private val extractor: LinkExtractor = JSoupLinkExtractor()
 ) {
     private val seen = mutableSetOf<URI>()
     private val frontier = LinkedList<URI>() // use a queue to allow breadth-first search

@@ -7,10 +7,10 @@ import kotlin.test.assertEquals
 
 
 class ExtractorsTest {
-    private lateinit var subject: RegexLinkExtractor
+    private lateinit var subject: JSoupLinkExtractor
     @Before
     fun setup() {
-        subject = RegexLinkExtractor()
+        subject = JSoupLinkExtractor()
     }
 
     @Test
@@ -74,6 +74,19 @@ class ExtractorsTest {
                     <a href="/about">About</a>
                     <a href="http://example.com/cats">Cats</a>
                     """
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `should handle other attributes in the tag`() {
+        assertEquals(
+            listOf(URI("https://example.com/about")),
+            subject.extract(
+                Page(
+                    URI("https://example.com/home"),
+                    """<a class="cool-bananas" href="/about">About me</a>"""
                 )
             )
         )
