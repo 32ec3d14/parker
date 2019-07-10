@@ -58,7 +58,7 @@ class ParkerIT {
 
     @Test
     fun `should fetch the page, extract the links and report using the original url`() {
-        Parker(URI("http://localhost:$port"), reporter).crawl(3)
+        Parker(URI("http://localhost:$port"), 2, reporter).crawl(3)
 
         assertEquals(
             mutableMapOf(URI("http://localhost:$port") to listOf(URI("http://localhost:$port/home"))),
@@ -80,6 +80,7 @@ class ParkerIT {
 
         Parker(
             URI("http://localhost:$port/too-many"),
+            2,
             reporter,
             KtorPageFetcher(RetryConfig(5, 250, PrintStream(out)))
         ).crawl(5)
@@ -109,6 +110,7 @@ class ParkerIT {
 
         Parker(
             URI("http://localhost:$port/after-three"),
+            2,
             reporter,
             KtorPageFetcher(RetryConfig(5, 250, PrintStream(out)))
         ).crawl(1)

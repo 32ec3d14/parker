@@ -20,12 +20,27 @@ mvn clean verify
 ./bin/parker https://www.example.com >results.txt
 ```
 
+## Usage
+
+```
+$ ./bin/parker -h
+usage: [-h] [--max-pages MAX_PAGES] [--rate-limit RATE_LIMIT] URL
+
+optional arguments:
+  -h, --help                show this help message and exit
+  --max-pages MAX_PAGES     the maximum number of pages to crawl before giving up
+  --rate-limit RATE_LIMIT   the minimum number of milliseconds between each request
+
+positional arguments:
+  URL                       the URL to crawl
+```
+
 ## Next steps
 
 - [x] Use HTML parsing library rather than regex
 - [x] Use more robust HTTP client (with better error handling, charset support, redirects, URL rebuilding, etc.)
 - [x] Make concurrent requests, possibly using Kotlin coroutines
-- [ ] Better arg parsing and validation
+- [x] Better arg parsing and validation
 - [ ] Production-ready features: logging and monitoring
 - [ ] Politeness: respect for robots.txt
 

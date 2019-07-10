@@ -23,6 +23,7 @@ class ParkerTest {
         seedUri = URI("https://www.example.com")
         subject = Parker(
             seedUri,
+            2,
             siteMapReporter,
             pageFetcher,
             linkExtractor

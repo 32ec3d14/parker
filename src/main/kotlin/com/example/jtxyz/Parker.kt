@@ -9,6 +9,7 @@ import kotlin.math.min
 
 class Parker(
     private val startingUri: URI,
+    private val rateLimit: Long,
     private val reporter: SiteMapReporter = ConsoleSiteMapReporter(),
     private val fetcher: PageFetcher = KtorPageFetcher(),
     private val extractor: LinkExtractor = JSoupLinkExtractor()
@@ -25,7 +26,7 @@ class Parker(
         val startedPageCount = AtomicInteger()
         val finishedPageCount = AtomicInteger()
 
-        val rateLimit = ticker(delayMillis = 2, initialDelayMillis = 0)
+        val rateLimit = ticker(delayMillis = rateLimit, initialDelayMillis = 0)
 
         fun crawl(uri: URI): Job = launch {
             if (startedPageCount.getAndUpdate { x -> min(x + 1, maxPages) } == maxPages) {
