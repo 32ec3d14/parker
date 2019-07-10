@@ -1,5 +1,6 @@
 package com.example.jtxyz
 
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
@@ -27,7 +28,7 @@ class ParkerTest {
     }
 
     @Test
-    fun `should fetch the page, extract the links and report using the original url`() {
+    fun `should fetch the page, extract the links and report using the original url`() = runBlocking {
         val page = Page(URI("https://www.example.com/"), "root-page")
         `when`(pageFetcher.fetch(seedUri)).thenReturn(page)
         `when`(linkExtractor.extract(page)).thenReturn(listOf())
@@ -39,7 +40,7 @@ class ParkerTest {
     }
 
     @Test
-    fun `should handle circular references`() {
+    fun `should handle circular references`() = runBlocking {
         val seedPage = Page(seedUri, "a")
         val pageB = Page(URI("https://www.example.com/b"), "a")
 

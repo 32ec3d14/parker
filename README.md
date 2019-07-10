@@ -36,9 +36,9 @@ Some rough performance figures using `test-server.js`
 ```
 # 200 pages, average 200ms reponse time
 time ./bin/parker http://localhost:9999/random/
-real	0m40.741s
+real	0m3.731s
 
 # Stops after 500 pages, average response time 100ms
 time ./bin/parker http://localhost:9999/
-real	0m52.428s
+real	0m4.005s
 ```

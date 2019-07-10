@@ -1,5 +1,6 @@
 package com.example.jtxyz
 
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -9,7 +10,7 @@ import kotlin.test.assertFailsWith
 
 class UtilTest {
     @Test
-    fun `retry should retry up the max number of attempts`() {
+    fun `retry should retry up the max number of attempts`()  = runBlocking {
         val out = ByteArrayOutputStream()
 
         val expectedError = "java.lang.Exception: Error doing task"

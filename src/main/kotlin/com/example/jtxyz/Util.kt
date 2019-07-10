@@ -1,5 +1,6 @@
 package com.example.jtxyz
 
+import kotlinx.coroutines.delay
 import java.io.PrintStream
 
 sealed class RetryResult<T>
@@ -12,7 +13,11 @@ data class RetryConfig(
     val printStream: PrintStream = System.err
 )
 
-fun <T> retry(config: RetryConfig, block: () -> RetryResult<T>): T {
+suspend fun <T> retry(
+    config: RetryConfig,
+    block: suspend () -> RetryResult<T>
+): T {
+
     for (i in 1..config.maxAttempts) {
         val result = block()
         if (result is Complete) return result.value
@@ -23,7 +28,7 @@ fun <T> retry(config: RetryConfig, block: () -> RetryResult<T>): T {
             }
 
             config.printStream.println("${result.reason}: Sleeping and retrying")
-            Thread.sleep(config.retryInterval)
+            delay(config.retryInterval)
         }
     }
 
