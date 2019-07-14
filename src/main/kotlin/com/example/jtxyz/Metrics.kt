@@ -10,10 +10,12 @@ object Metrics {
 
     private val requestCount = AtomicInteger()
     private val requestsInFlight = metrics.histogram("request.in-flight")!!
+    private val requestsDepth = metrics.histogram("request.depth")!!
     private val requestTiming = metrics.timer("request.duration")!!
 
-    suspend fun <T> measureRequest(block: suspend () -> T): T {
+    suspend fun <T> measureFetch(depth: Int, block: suspend () -> T): T {
         requestsInFlight.update(requestCount.incrementAndGet())
+        requestsDepth.update(depth)
         val startTime = System.nanoTime()
         try {
             return block()
@@ -23,8 +25,9 @@ object Metrics {
         }
     }
 
+    private val parseTiming = metrics.timer("parse.duration")!!
 
-    val parseTiming = metrics.timer("parse.duration")!!
+    fun <T> measureExtract(block: () -> T): T = parseTiming.time<T>(block)
 
     fun report() = ConsoleReporter
         .forRegistry(metrics)

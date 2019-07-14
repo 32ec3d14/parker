@@ -13,14 +13,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.3.40</kotlin.version>
+        <kotlin.version>1.3.41</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <jsoup.version>1.12.1</jsoup.version>
         <junit.version>4.12</junit.version>
         <mockito.version>2.28.2</mockito.version>
         <ktor.version>1.2.2</ktor.version>
         <metrics.version>4.0.0</metrics.version>
-        <main.class>com.example.jtxyz.CliKt</main.class>
+        <main.class>com.example.jtxyz.ParkerKt</main.class>
     </properties>
 
     <repositories>
@@ -50,11 +50,6 @@
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-apache</artifactId>
             <version>${ktor.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.xenomachina</groupId>
-            <artifactId>kotlin-argparser</artifactId>
-            <version>2.0.7</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>

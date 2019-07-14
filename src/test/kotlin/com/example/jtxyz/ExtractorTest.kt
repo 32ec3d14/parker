@@ -1,25 +1,18 @@
 package com.example.jtxyz
 
-import org.junit.Before
 import org.junit.Test
 import java.net.URI
 import kotlin.test.assertEquals
 
 
-class ExtractorsTest {
-    private lateinit var subject: JSoupLinkExtractor
-    @Before
-    fun setup() {
-        subject = JSoupLinkExtractor()
-    }
-
+class ExtractorTest {
     @Test
     fun `should return the links from the page`() {
         assertEquals(
             listOf(URI("https://example.com/about")),
-            subject.extract(
+            extractLinks(
                 Page(
-                    URI("https://example.com/home"),
+                    URI("https://example.com/"),
                     """<body><p>hrefs are fun</p><a href="/about">About me</a></body>"""
                 )
             )
@@ -31,9 +24,9 @@ class ExtractorsTest {
     fun `should ignore links that don't parse as URIs`() {
         assertEquals(
             listOf(),
-            subject.extract(
+            extractLinks(
                 Page(
-                    URI("https://example.com/home"),
+                    URI("https://example.com/"),
                     """<a href="javascript:(function(){alert('Hello!');})()">About me</a>"""
                 )
             )
@@ -45,9 +38,9 @@ class ExtractorsTest {
     fun `should ignore links that with schemes other than http or https`() {
         assertEquals(
             listOf(),
-            subject.extract(
+            extractLinks(
                 Page(
-                    URI("https://example.com/home/"),
+                    URI("https://example.com/"),
                     """
                     <a href="https://tools.ietf.org/html/rfc3986">RFC 3986</a>
                     <a href="mailto:santa@example.com">Electronic Mail</a>
@@ -66,7 +59,7 @@ class ExtractorsTest {
                 URI("https://example.com/about"),
                 URI("http://example.com/cats")
             ),
-            subject.extract(
+            extractLinks(
                 Page(
                     URI("https://example.com/home/"),
                     """
@@ -83,9 +76,9 @@ class ExtractorsTest {
     fun `should handle other attributes in the tag`() {
         assertEquals(
             listOf(URI("https://example.com/about")),
-            subject.extract(
+            extractLinks(
                 Page(
-                    URI("https://example.com/home"),
+                    URI("https://example.com/"),
                     """<a class="cool-bananas" href="/about">About me</a>"""
                 )
             )
